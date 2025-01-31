@@ -1,0 +1,23 @@
+Domestic Violence Against Women
+================
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to
+GitHub. When you click the **Knit** button all R code chunks are run and
+a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+    data <- read.csv("~/sstaton\Desktop\Personal\Studio 2\DV data.csv")
+
+Description:
+
+Education: Educational attainment of the respondent, categorized as
+primary, secondary, or tertiary.
+
+Employment: Employment status of the respondent
+
+Income: Income level of the respondent (0 indicating no income).
