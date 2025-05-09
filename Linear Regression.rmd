@@ -1,0 +1,88 @@
+---
+title: "Linear regression"
+output: html_document
+date: "2025-05-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ## 1. Setup and Data
+```{r}
+# Install and load required library
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2", repos = "https://cloud.r-project.org")
+}
+library(ggplot2)
+
+# Read data
+df <- read.csv("dv_socioeconomic_dataset_clipped.csv", stringsAsFactors = FALSE)
+cat("Sample size (n):", nrow(df), "\n")
+```
+
+## 2. Fit OLS Bivariate Regression
+
+
+```{r}
+# Extract variables
+dv <- as.numeric(df$Domestic_violence_incide)
+iv <- as.numeric(df$Socioeconomic_index)
+
+# Fit ordinary least squares model
+glt_fit <- lm(dv ~ iv, data = df)
+
+# Summarize results
+summary(glt_fit)
+
+```
+
+## 3. Compute R²
+```{r}
+# Extract R-squared from model summary
+r2 <- summary(glt_fit)$r.squared
+cat(sprintf("R² = %.3f\n", r2))
+
+```
+## 4. Scatterplot with Regression Line & Equation
+```{r}
+# Coefficient estimates
+coef_vals <- coef(glt_fit)
+intercept <- coef_vals[1]
+slope     <- coef_vals[2]
+
+# Build scatterplot
+ggplot(df, aes(x = Socioeconomic_index, y = Domestic_violence_incide)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(intercept = intercept, slope = slope, color = "blue", linewidth = 1) +
+  annotate(
+    "text", x = min(df$Socioeconomic_index), y = max(df$Domestic_violence_incide),
+    label = paste0(
+      "y = ", round(intercept, 2), " + ", round(slope, 4), " x\n",
+      "R² = ", round(r2, 3)
+    ), hjust = 0, vjust = 1
+  ) +
+  labs(
+    title = "DV Incidents vs Socioeconomic Index (OLS)",
+    x = "Socioeconomic Index",
+    y = "Number of DV Incidents"
+  ) +
+  theme_minimal()
+
+```
+
+## 5. Interpretation
+```{r}
+# Print interpretation
+cat(
+  sprintf(
+    "Intercept: %.2f\nSlope: %.4f\nR²: %.3f\n\n",
+    intercept, slope, r2
+  ),
+  sprintf(
+    "Each 1-unit increase in SESIndex is associated with an expected change of %.4f DV incidents. The model explains %.1f%% of the variance.\n",
+    slope, r2 * 100
+  )
+)
+
+```
