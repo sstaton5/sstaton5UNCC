@@ -1,0 +1,83 @@
+---
+title: "Multi Linear Regression"
+output: html_document
+date: "2025-05-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r cars}
+library(ggplot2)
+```
+
+## Including Plots
+
+```{r }
+# Load the CSV file
+df <- read.csv("dv_socioeconomic_dataset_clipped.csv", stringsAsFactors = FALSE)
+
+# Show number of rows (sample size)
+nrow(df)
+
+```
+## 2. Fit a Multiple Linear Regression
+```{r }
+# Run linear regression model
+fit <- lm(Domestic_violence_incide ~ Socioeconomic_index +
+            Income + Education_years + Employment_status + Urban_status,
+          data = df)
+
+# Show model summary
+summary(fit)
+
+```
+## 3. Interpretation (in Simple Terms)
+From the summary above:
+
+1. The intercept is the predicted DV when all values are zero.
+2. SES Index: Positive effect; more SES → more DV, statistically significant.
+3. Income: Negative effect; more income → slightly less DV, significant.
+4. EducationYears: Dropped due to high overlap with other variables (collinearity).
+5. EmploymentStatus: Negative effect, but not significant.
+6. UrbanStatus: Slightly increases DV, somewhat significant.
+
+```{r }
+# Show just coefficients
+coef(fit)
+```
+## 4. Model Deviation
+We used all available variables. However, EducationYears was dropped due to collinearity (overlapping with other variables). This may lead to missing some important relationships and bias the model slightly. Also, the R-squared is low, so many other factors might be influencing DV.
+
+
+## 5. Diagnostic: Check if Residuals are Normal (Shapiro-Wilk Test)
+```{r }
+# Get residuals
+resid_vals <- resid(fit)
+
+# Run the Shapiro-Wilk test
+shapiro.test(resid_vals)
+
+```
+## 6. Plot: Residuals vs. Fitted Values
+This plot helps us check if our model fits well. Ideally, the points should be randomly scattered.
+
+```{r }
+# Get fitted values
+fitted_vals <- fitted(fit)
+
+# Plot residuals
+ggplot(data.frame(Fitted = fitted_vals, Residuals = resid_vals),
+       aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Residuals vs Fitted",
+       x     = "Fitted Values",
+       y     = "Residuals") +
+  theme_minimal()
+
+```
+
